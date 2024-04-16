@@ -4,8 +4,7 @@ import codecs as cs
 import os
 import sys
 import pdb
-sys.path.insert(0, '/mnt/nfs-storage-titan/BERT/pytorch_pretrained_BERT')
-from pytorch_pretrained_bert.tokenization import BertTokenizer
+from bert_utils.tokenization import BertTokenizer
 
 def read_pair_gold(f, args):
     # key: text + aspect span + opinion span; value: corresponding category-sentiment type number
