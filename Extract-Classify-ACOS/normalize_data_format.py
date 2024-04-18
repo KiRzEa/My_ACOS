@@ -14,7 +14,7 @@ sentiment2id = {
 def process_label(text, quad, tokenizer):
     quad = re.sub(r'[{}]', '', quad).strip().split(',')
     category, aspect, sentiment, opinion = quad
-    
+    category = category.replace('&', '_')
     # Split text into words
     words = text.split()
     aspect = ' '.join(tokenizer(aspect)[0].tokens[1:-1])
