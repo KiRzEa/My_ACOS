@@ -18,7 +18,7 @@ gm = GPUManager()
 device = gm.auto_choice(mode=0)
 os.environ["CUDA_VISIBLE_DEVICES"] = str(device)
 
-import numpy as np
+import numpy as npf
 
 import torch
 from torch.utils.data import (DataLoader, RandomSampler, SequentialSampler,
