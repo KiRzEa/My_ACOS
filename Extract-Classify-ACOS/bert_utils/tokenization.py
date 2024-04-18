@@ -115,7 +115,7 @@ class BertTokenizer(object):
                                                 never_split=never_split)
         self.wordpiece_tokenizer = WordpieceTokenizer(vocab=self.vocab)
         self.max_len = max_len if max_len is not None else int(1e12)
-
+        self.unk_token = '[UNK]'
     def tokenize(self, text):
         split_tokens = []
         if self.do_basic_tokenize:
@@ -130,7 +130,7 @@ class BertTokenizer(object):
         """Converts a sequence of tokens into ids using the vocab."""
         ids = []
         for token in tokens:
-            ids.append(self.vocab[token])
+            ids.append(self.vocab.get(token, self.vocab.get(self.unk_token)))
         if len(ids) > self.max_len:
             logger.warning(
                 "Token indices sequence length is longer than the specified maximum "
