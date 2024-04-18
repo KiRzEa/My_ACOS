@@ -89,7 +89,7 @@ def create_test_pair(texts, all_labels, name, subset):
                 components = label.split()
                 aspect_span, category, sentiment, opinion_span = tuple(components)
 
-                f.write(f'{text}####{aspect_span} {opinion_span} {category}#{sentiment}')
+                f.write(f'{text}####{aspect_span} {opinion_span} {category}#{sentiment}\n')
               
 
 def main():
