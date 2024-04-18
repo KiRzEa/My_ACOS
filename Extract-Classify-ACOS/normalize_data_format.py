@@ -82,6 +82,15 @@ def normalize_format(path, name, subset, tokenizer):
     
     return texts, all_labels
 
+def create_test_pair(texts, all_labels, name, subset):
+    with open(f'tokenized_data/{name}_{subset}_pair.tsv') as f:
+        for text, labels in zip(texts, all_labels):
+            for label in labels:
+                components = label.split()
+                aspect_span, category, sentiment, opinion_span = tuple(components)
+
+                f.write(f'{text}####{aspect_span} {opinion_span} {category}#{sentiment}')
+              
 
 def main():
     
@@ -92,6 +101,10 @@ def main():
     train_texts, all_train_labels = normalize_format('../data/ViRes/Train.txt', name, 'train', tokenizer)
     dev_texts, all_dev_labels = normalize_format('../data/ViRes/Dev.txt', name, 'dev', tokenizer)
     test_texts, all_test_labels = normalize_format('../data/ViRes/Test.txt', name, 'test', tokenizer)
+
+    create_test_pair(train_texts, all_train_labels, name, 'train')
+    create_test_pair(dev_texts, all_dev_labels, name, 'dev')
+    create_test_pair(test_texts, all_test_labels, name, 'test')
 
 if __name__ == '__main__':
     main()
