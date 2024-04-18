@@ -79,15 +79,19 @@ def normalize_format(path, name, subset, tokenizer):
         for text, labels in zip(texts, all_labels):
             labels = '\t'.join(labels)
             f.write(f'{text}\t{labels}\n')
+    
+    return texts, all_labels
 
 
 def main():
     
     tokenizer = AutoTokenizer.from_pretrained('google-bert/bert-base-multilingual-uncased')
 
-    normalize_format('../data/ViRes/Train.txt', 'uit_absa_res', 'train', tokenizer)
-    normalize_format('../data/ViRes/Dev.txt', 'uit_absa_res', 'dev', tokenizer)
-    normalize_format('../data/ViRes/Test.txt', 'uit_absa_res', 'test', tokenizer)
+    name = 'uit_absa_res'
+
+    train_texts, all_train_labels = normalize_format('../data/ViRes/Train.txt', name, 'train', tokenizer)
+    dev_texts, all_dev_labels = normalize_format('../data/ViRes/Dev.txt', name, 'dev', tokenizer)
+    test_texts, all_test_labels = normalize_format('../data/ViRes/Test.txt', name, 'test', tokenizer)
 
 if __name__ == '__main__':
     main()

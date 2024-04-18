@@ -211,7 +211,7 @@ class CategorySentiProcessor(DataProcessor):
         """See base class."""
         l = None
         sentiment = None
-        if domain_type.startswith('rest'):
+        if domain_type.startswith('rest') or domain_type=='uit_absa_res':
             l = ['RESTAURANT#GENERAL', 'SERVICE#GENERAL', 'FOOD#GENERAL', 'FOOD#QUALITY', 'FOOD#STYLE_OPTIONS', 'DRINKS#STYLE_OPTIONS', 'DRINKS#PRICES', 
             'AMBIENCE#GENERAL', 'RESTAURANT#PRICES', 'FOOD#PRICES', 'RESTAURANT#MISCELLANEOUS', 'DRINKS#QUALITY', 'LOCATION#GENERAL']
         elif domain_type == 'laptop':
