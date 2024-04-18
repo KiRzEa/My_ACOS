@@ -1,6 +1,6 @@
 import re
 from ftfy import fix_text
-from underthesea import normalize_text
+from underthesea import text_normalize
 import pandas as pd
 
 
