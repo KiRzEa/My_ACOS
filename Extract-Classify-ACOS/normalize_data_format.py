@@ -2,7 +2,7 @@ import re
 from ftfy import fix_text
 from underthesea import text_normalize
 import pandas as pd
-from bert_utils.tokenization import BertTokenizer
+from transformers import AutoTokenizer
 
 
 sentiment2id = {
@@ -78,12 +78,12 @@ def normalize_format(path, name, subset, tokenizer):
     with open(f'tokenized_data/{name}_{subset}_quad_bert.tsv', 'w') as f:
         for text, labels in zip(texts, all_labels):
             labels = '\t'.join(labels)
-            f.write(f'{text}\t{labels}')
+            f.write(f'{text}\t{labels}\n')
 
 
 def main():
     
-    tokenizer = BertTokenizer.from_pretrained('google-bert/bert-base-multilingual-uncased')
+    tokenizer = AutoTokenizer.from_pretrained('google-bert/bert-base-multilingual-uncased')
 
     normalize_format('../data/ViRes/Train.txt', 'uit_absa_res', 'train', tokenizer)
     normalize_format('../data/ViRes/Dev.txt', 'uit_absa_res', 'dev', tokenizer)
