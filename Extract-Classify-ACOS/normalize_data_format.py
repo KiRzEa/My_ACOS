@@ -83,7 +83,7 @@ def normalize_format(path, name, subset, tokenizer):
     return texts, all_labels
 
 def create_test_pair(texts, all_labels, name, subset):
-    with open(f'tokenized_data/{name}_{subset}_pair.tsv') as f:
+    with open(f'tokenized_data/{name}_{subset}_pair.tsv', 'w') as f:
         for text, labels in zip(texts, all_labels):
             for label in labels:
                 components = label.split()
