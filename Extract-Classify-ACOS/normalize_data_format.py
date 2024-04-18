@@ -2,7 +2,7 @@ import re
 from ftfy import fix_text
 from underthesea import text_normalize
 import pandas as pd
-
+from bert_utils.tokenization import BertTokenizer
 
 
 sentiment2id = {
@@ -58,7 +58,7 @@ def process_label(text, quad, tokenizer):
 
     return f"{aspect_span} {category} {sentiment2id[sentiment]} {opinion_span}"
 
-def normalize_format(path, name, subset):
+def normalize_format(path, name, subset, tokenizer):
     with open(path) as f:
         data = f.read().split('\n\n')
         ids = []
@@ -75,16 +75,19 @@ def normalize_format(path, name, subset):
             all_labels.append([process_label(text, label, tokenizer) for label in labels])
 
     
-    with open(f'../Extract-Classify-ACOS/tokenized_data/{name}_{subset}_quad_bert.tsv', 'w') as f:
+    with open(f'tokenized_data/{name}_{subset}_quad_bert.tsv', 'w') as f:
         for text, labels in zip(texts, all_labels):
             labels = '\t'.join(labels)
             f.write(f'{text}\t{labels}')
 
 
 def main():
-    normalize_format('Train.txt', 'uit_absa_res', 'train')
-    normalize_format('Dev.txt', 'uit_absa_res', 'dev')
-    normalize_format('Test.txt', 'uit_absa_res', 'test')
+    
+    tokenizer = BertTokenizer.from_pretrained('google-bert/bert-base-multilingual-uncased')
+
+    normalize_format('../data/ViRes/Train.txt', 'uit_absa_res', 'train', tokenizer)
+    normalize_format('../data/ViRes/Dev.txt', 'uit_absa_res', 'dev', tokenizer)
+    normalize_format('../data/ViRes/Test.txt', 'uit_absa_res', 'test', tokenizer)
 
 if __name__ == '__main__':
     main()
