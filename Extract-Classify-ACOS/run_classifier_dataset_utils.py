@@ -161,7 +161,7 @@ class QuadProcessor(DataProcessor):
         sentiment = ['negative', 'neutral', 'positive']
         # seqlabs = ['O',  'I']
         # 'P' means PAD, 'M' means IMP.
-        seqlabs = ['[CLS]', 'O', 'I-A', 'B-A', 'I-O', 'B-O']
+        seqlabs = [cls_token, 'O', 'I-A', 'B-A', 'I-O', 'B-O']
         # seqlabs = ['O', 'I-A', 'B-A', 'M-A', 'I-O', 'B-O', 'M-O']
         label_list = []
         
@@ -262,7 +262,7 @@ class CategorySentiProcessor(DataProcessor):
 
 
 def convert_examples_to_features(examples, label_list, max_seq_length,
-                                 tokenizer, output_mode, task_name):
+                                 tokenizer, output_mode, task_name, cls_token='[CLS]'):
     """Loads a data file into a list of `InputBatch`s."""
 
     label_map_senti = {label : i for i, label in enumerate(label_list[0])}
@@ -308,8 +308,8 @@ def convert_examples_to_features(examples, label_list, max_seq_length,
         aspect_tokens = []
         aspect_segment_ids = []
 
-        aspect_tokens.append("[CLS]")
-        aspect_ids.append(label_map_seq['[CLS]'])
+        aspect_tokens.append(cls_token)
+        aspect_ids.append(label_map_seq[cls_token])
         aspect_segment_ids.append(0)
 
         for i, token in enumerate(bert_tokens_a):
@@ -317,10 +317,10 @@ def convert_examples_to_features(examples, label_list, max_seq_length,
             aspect_ids.append(label_map_seq[aspect_labels[i]])
             aspect_segment_ids.append(0)
             
-        aspect_tokens.append("[CLS]")
+        aspect_tokens.append(cls_token)
         tokens_len = len(aspect_tokens)
 
-        aspect_ids.append(label_map_seq['[CLS]'])
+        aspect_ids.append(label_map_seq[cls_token])
         aspect_segment_ids.append(0)
 
         aspect_input_ids = tokenizer.convert_tokens_to_ids(aspect_tokens)
@@ -385,7 +385,7 @@ def _truncate_seq_pair(bert_tokens_a, aspect_labels, max_length):
 
 
 def convert_examples_to_features2nd(examples, label_list, max_seq_length,
-                                 tokenizer, output_mode):
+                                 tokenizer, output_mode, cls_token='[CLS]'):
     """Loads a data file into a list of `InputBatch`s."""
 
     category_senti_map = {label : i for i, label in enumerate(label_list[0])}
@@ -411,7 +411,7 @@ def convert_examples_to_features2nd(examples, label_list, max_seq_length,
         aspect_tokens = []
         aspect_segment_ids = []
 
-        aspect_tokens.append("[CLS]")
+        aspect_tokens.append(cls_token)
         aspect_segment_ids.append(0)
 
         for i, token in enumerate(bert_tokens_a):

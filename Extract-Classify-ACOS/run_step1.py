@@ -76,6 +76,9 @@ def main():
                         help="Bert pre-trained model selected in the list: bert-base-uncased, "
                         "bert-large-uncased, bert-base-cased, bert-large-cased, bert-base-multilingual-uncased, "
                         "bert-base-multilingual-cased, bert-base-chinese.")
+    parser.add_argument("--cls_token",
+                        default='[CLS]',
+                        type=str)
     parser.add_argument("--task_name",
                         default=None,
                         type=str,
@@ -266,7 +269,7 @@ def main():
             eval_gold += [aspect_labels, cur_exist_imp_aspect, cur_exist_imp_opinion]
 
         eval_features = convert_examples_to_features(
-            eval_examples, label_list, args.max_seq_length, tokenizer, output_mode, task_name)
+            eval_examples, label_list, args.max_seq_length, tokenizer, output_mode, task_name, args.cls_token)
 
         eval_tokens_len = torch.tensor([f.tokens_len for f in eval_features], dtype=torch.long)
         eval_aspect_input_ids = torch.tensor([f.aspect_input_ids for f in eval_features], dtype=torch.long)
