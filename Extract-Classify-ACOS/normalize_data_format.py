@@ -100,17 +100,18 @@ def main(args=None):
     
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
 
-    train_texts, all_train_labels = normalize_format(f'{args.data_dir}/Train.txt', args.name, 'train', tokenizer, args.do_segment)
-    dev_texts, all_dev_labels = normalize_format(f'{args.data_dir}/Dev.txt', args.name, 'dev', tokenizer, args.do_segment)
-    test_texts, all_test_labels = normalize_format(f'{args.data_dir}/Test.txt', args.name, 'test', tokenizer, args.do_segment)
+    train_texts, all_train_labels = normalize_format(f'{args.data_dir}/Train.txt', args.experiment_name, 'train', tokenizer, args.do_segment)
+    dev_texts, all_dev_labels = normalize_format(f'{args.data_dir}/Dev.txt', args.experiment_name, 'dev', tokenizer, args.do_segment)
+    test_texts, all_test_labels = normalize_format(f'{args.data_dir}/Test.txt', args.experiment_name, 'test', tokenizer, args.do_segment)
 
-    create_test_pair(train_texts, all_train_labels, args.name, 'train')
-    create_test_pair(dev_texts, all_dev_labels, args.name, 'dev')
-    create_test_pair(test_texts, all_test_labels, args.name, 'test')
+    create_test_pair(train_texts, all_train_labels, args.experiment_name, 'train')
+    create_test_pair(dev_texts, all_dev_labels, args.experiment_name, 'dev')
+    create_test_pair(test_texts, all_test_labels, args.experiment_name, 'test')
 
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--model_name',
+                        type='str'
                         required=True)
     parser.add_argument('--do_segment',
                         action='store_true',
@@ -122,7 +123,7 @@ if __name__ == '__main__':
                         type=str,
                         required=False,
                         default='tokenized_data')
-    parser.add_argument('--name',
+    parser.add_argument('--experiment_name',
                         type='str',
                         default='uit_absa_res')
 
