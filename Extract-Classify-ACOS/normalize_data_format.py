@@ -17,8 +17,8 @@ def process_label(text, quad, tokenizer):
     category = category.replace('&', '_')
     # Split text into words
     words = text.split()
-    aspect = ' '.join(tokenizer(aspect)[0].tokens[1:-1])
-    opinion = ' '.join(tokenizer(opinion)[0].tokens[1:-1])
+    aspect = word_tokenize(aspect)
+    opinion = word_tokenize(opinion)
 
     # Find aspect in text
     aspect_start_index = None
@@ -98,8 +98,7 @@ def create_test_pair(texts, all_labels, name, subset):
 
 def main(args=None):
     
-    tokenizer = AutoTokenizer.from_pretrained('google-bert/bert-base-multilingual-uncased')
-
+    tokenizer = AutoTokenizer.from_pretrained(args.model_name)
 
     train_texts, all_train_labels = normalize_format(f'{args.data_dir}/Train.txt', args.name, 'train', tokenizer, args.do_segment)
     dev_texts, all_dev_labels = normalize_format(f'{args.data_dir}/Dev.txt', args.name, 'dev', tokenizer, args.do_segment)
@@ -111,6 +110,8 @@ def main(args=None):
 
 if __name__ == '__main__':
     parser = ArgumentParser()
+    parser.add_argument('--model_name',
+                        required=True)
     parser.add_argument('--do_segment',
                         action='store_true',
                         required=False)
