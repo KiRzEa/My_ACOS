@@ -5,7 +5,6 @@ import os
 import sys
 import pdb
 
-from AutoTokenizer
 
 def read_pair_gold(f, args, tokenizer):
     # key: text + aspect span + opinion span; value: corresponding category-sentiment type number
