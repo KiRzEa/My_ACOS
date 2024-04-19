@@ -609,7 +609,7 @@ class BertPreTrainedModel(nn.Module):
                 ))
         self.config = config
 
-    def init_bert_weights(self, module):
+    def init_weights(self, module):
         """ Initialize the weights.
         """
         if isinstance(module, (nn.Linear, nn.Embedding)):
@@ -989,7 +989,7 @@ class BertModel(BertPreTrainedModel):
         self.encoder = BertEncoder(config, output_attentions=output_attentions,
                                            keep_multihead_output=keep_multihead_output)
         self.pooler = BertPooler(config)
-        self.apply(self.init_bert_weights)
+        self.apply(self.init_weights)
 
     def prune_heads(self, heads_to_prune):
         """ Prunes heads of the model.
@@ -1117,7 +1117,7 @@ class BertForPreTraining(BertPreTrainedModel):
         self.bert = BertModel(config, output_attentions=output_attentions,
                                       keep_multihead_output=keep_multihead_output)
         self.cls = BertPreTrainingHeads(config, self.bert.embeddings.word_embeddings.weight)
-        self.apply(self.init_bert_weights)
+        self.apply(self.init_weights)
 
     def forward(self, input_ids, token_type_ids=None, attention_mask=None, masked_lm_labels=None, next_sentence_label=None, head_mask=None):
         outputs = self.bert(input_ids, token_type_ids, attention_mask,
@@ -1280,7 +1280,7 @@ class BertForSequenceClassification(BertPreTrainedModel):
         self.classifier = nn.Linear(config.hidden_size*2, num_labels)
 
         self.LayerNorm = BertLayerNorm(128, eps=config.layer_norm_eps)
-        self.apply(self.init_bert_weights)
+        self.apply(self.init_weights)
 
     def forward(self, input_ids, token_type_ids=None, attention_mask=None, aspect_mask=None, labels=None, head_mask=None):
         pooled_outputs, _ = self.bert(input_ids, token_type_ids, attention_mask, output_all_encoded_layers=False, head_mask=head_mask)
@@ -1565,7 +1565,7 @@ class BertForQuadABSA(BertPreTrainedModel):
             nn.Linear(config.hidden_size, self.num_labels[1])
         )
 
-        self.apply(self.init_bert_weights)
+        self.apply(self.init_weights)
 
     def forward(self, aspect_input_ids, aspect_labels,
                 aspect_token_type_ids, aspect_attention_mask,
@@ -1620,7 +1620,7 @@ class CategorySentiClassification(BertPreTrainedModel):
             nn.Linear(768*2, num_labels)
         )
 
-        self.apply(self.init_bert_weights)
+        self.apply(self.init_weights)
 
     def forward(self, tokenizer, _e, aspect_input_ids,
                 aspect_token_type_ids, aspect_attention_mask,

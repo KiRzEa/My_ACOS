@@ -43,12 +43,15 @@ from torch.utils.data.distributed import DistributedSampler
 from torch.nn import CrossEntropyLoss, MSELoss, MultiLabelSoftMarginLoss, BCEWithLogitsLoss
 
 from modeling import BertForQuadABSA
+from my_modeling import RobertaForQuadABSA
 from bert_utils.tokenization import BertTokenizer
 from bert_utils.optimization import BertAdam, WarmupLinearSchedule
 
 from run_classifier_dataset_utils import *
 from eval_metrics import *
 import gc
+
+from transformers import AutoTokenizer
 
 if sys.version_info[0] == 2:
     import cPickle as pickle
