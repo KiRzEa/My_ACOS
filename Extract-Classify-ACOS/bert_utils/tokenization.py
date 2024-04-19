@@ -69,8 +69,12 @@ def load_vocab(vocab_file):
             if not token:
                 break
             token = token.strip()
-            vocab[token] = index
-            index += 1
+            if len(token.split()) > 1:
+                token, token_id = token.split()
+                vocab[token] = token_id
+            else:
+                vocab[token] = index
+                index += 1
     return vocab
 
 

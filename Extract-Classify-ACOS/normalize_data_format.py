@@ -1,9 +1,9 @@
 import re
 from ftfy import fix_text
-from underthesea import text_normalize
+from underthesea import text_normalize, word_tokenize
 import pandas as pd
 from transformers import AutoTokenizer
-
+from argparse import ArgumentParser
 
 sentiment2id = {
     'positive': 0,
@@ -58,7 +58,7 @@ def process_label(text, quad, tokenizer):
 
     return f"{aspect_span} {category} {sentiment2id[sentiment]} {opinion_span}"
 
-def normalize_format(path, name, subset, tokenizer):
+def normalize_format(path, name, subset, tokenizer, do_segment=False):
     with open(path) as f:
         data = f.read().split('\n\n')
         ids = []
@@ -67,7 +67,11 @@ def normalize_format(path, name, subset, tokenizer):
         for example in data:
             example = example.split('\n')
             id = example[0]
-            text = ' '.join(tokenizer(example[1])[0].tokens[1:-1])
+            text = example[1]
+            if do_segment:
+                text = word_tokenize(text, format='text')
+                text = text_normalize(text)
+
             labels = example[2].split('; ')
 
             ids.append(id)
@@ -92,19 +96,35 @@ def create_test_pair(texts, all_labels, name, subset):
                 f.write(f'{text}####{aspect_span} {opinion_span}\t{category}#{sentiment}\n')
               
 
-def main():
+def main(args=None):
     
     tokenizer = AutoTokenizer.from_pretrained('google-bert/bert-base-multilingual-uncased')
 
-    name = 'uit_absa_res'
 
-    train_texts, all_train_labels = normalize_format('../data/ViRes/Train.txt', name, 'train', tokenizer)
-    dev_texts, all_dev_labels = normalize_format('../data/ViRes/Dev.txt', name, 'dev', tokenizer)
-    test_texts, all_test_labels = normalize_format('../data/ViRes/Test.txt', name, 'test', tokenizer)
+    train_texts, all_train_labels = normalize_format(f'{args.data_dir}/Train.txt', args.name, 'train', tokenizer, args.do_segment)
+    dev_texts, all_dev_labels = normalize_format(f'{args.data_dir}/Dev.txt', args.name, 'dev', tokenizer, args.do_segment)
+    test_texts, all_test_labels = normalize_format(f'{args.data_dir}/Test.txt', args.name, 'test', tokenizer, args.do_segment)
 
-    create_test_pair(train_texts, all_train_labels, name, 'train')
-    create_test_pair(dev_texts, all_dev_labels, name, 'dev')
-    create_test_pair(test_texts, all_test_labels, name, 'test')
+    create_test_pair(train_texts, all_train_labels, args.name, 'train')
+    create_test_pair(dev_texts, all_dev_labels, args.name, 'dev')
+    create_test_pair(test_texts, all_test_labels, args.name, 'test')
 
 if __name__ == '__main__':
-    main()
+    parser = ArgumentParser()
+    parser.add_argument('--do_segment',
+                        action='store_true',
+                        required=False)
+    parser.add_argument('--data_dir',
+                        type=str,
+                        required=True)
+    parser.add_argument('--output_dir',
+                        type=str,
+                        required=False,
+                        default='tokenized_data')
+    parser.add_argument('--name',
+                        type='str',
+                        default='uit_absa_res')
+
+    args = parser.parse_args()
+    
+    main(args)
