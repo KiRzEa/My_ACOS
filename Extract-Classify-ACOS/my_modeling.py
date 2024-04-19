@@ -39,8 +39,6 @@ class BertForQuadABSA(nn.Module):
             nn.Linear(config.hidden_size, self.num_labels[1])
         )
 
-        self.apply(self.init_bert_weights)
-
     def forward(self, aspect_input_ids, aspect_labels,
                 aspect_token_type_ids, aspect_attention_mask,
                 exist_imp_aspect, exist_imp_opinion):
@@ -89,7 +87,6 @@ class CategorySentiClassification(nn.Module):
             nn.Linear(768*2, num_labels)
         )
 
-        self.apply(self.init_bert_weights)
 
     def forward(self, tokenizer, _e, aspect_input_ids,
                 aspect_token_type_ids, aspect_attention_mask,
