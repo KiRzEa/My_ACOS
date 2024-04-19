@@ -11,17 +11,19 @@ sentiment2id = {
     'neutral': 2
 }
 
+def process(text):
+  text = text_normalize(text)
+  text = word_tokenize(text, format='text')
+  return ' '.join(tokenizer.convert_ids_to_tokens(tokenizer(text)['input_ids'])[1:-1])
+
 def process_label(text, quad, tokenizer):
     quad = re.sub(r'[{}]', '', quad).strip().split(',')
     category, aspect, sentiment, opinion = quad
     category = category.replace('&', '_')
     # Split text into words
     words = text.split()
-    aspect = word_tokenize(aspect, format='text')
-    opinion = word_tokenize(opinion, format='text')
-
-    aspect = ' '.join(tokenizer.convert_ids_to_tokens(tokenizer(aspect)['input_ids'])[1:-1])
-    opinion = ' '.join(tokenizer.convert_ids_to_tokens(tokenizer(opinion)['input_ids'])[1:-1])
+    aspect = process(aspect)
+    opinion = process(opinion)
     # Find aspect in text
     aspect_start_index = None
     aspect_end_index = None
