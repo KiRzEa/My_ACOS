@@ -205,7 +205,7 @@ class CategorySentiProcessor(DataProcessor):
         """See base class."""
         string = domain_type
         return self._create_examples(
-            self._read_tsv(os.path.join(data_dir, "tokenized_data/"+string+"_test_pair_1st.tsv")), "test")
+            self._read_tsv(os.path.join(data_dir, "tokenized_data/"+string+"_test_pair.tsv")), "test")
 
     def get_labels(self, domain_type):
         """See base class."""
