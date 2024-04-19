@@ -17,8 +17,8 @@ def process_label(text, quad, tokenizer):
     category = category.replace('&', '_')
     # Split text into words
     words = text.split()
-    aspect = word_tokenize(aspect)
-    opinion = word_tokenize(opinion)
+    aspect = word_tokenize(aspect, format='text')
+    opinion = word_tokenize(opinion, format='text')
 
     # Find aspect in text
     aspect_start_index = None
