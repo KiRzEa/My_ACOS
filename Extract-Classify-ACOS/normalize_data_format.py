@@ -11,19 +11,20 @@ sentiment2id = {
     'neutral': 2
 }
 
-def process(text):
-  text = text_normalize(text)
-  text = word_tokenize(text, format='text')
+def process(text, tokenizer, do_segment=False):
+  if do_segment:
+    text = text_normalize(text)
+    text = word_tokenize(text, format='text')
   return ' '.join(tokenizer.convert_ids_to_tokens(tokenizer(text)['input_ids'])[1:-1])
 
-def process_label(text, quad, tokenizer):
+def process_label(text, quad, tokenizer, do_segment):
     quad = re.sub(r'[{}]', '', quad).strip().split(',')
     category, aspect, sentiment, opinion = quad
     category = category.replace('&', '_')
     # Split text into words
     words = text.split()
-    aspect = process(aspect)
-    opinion = process(opinion)
+    aspect = process(aspect, tokenizer, do_segment)
+    opinion = process(opinion, tokenizer, do_segment)
     # Find aspect in text
     aspect_start_index = None
     aspect_end_index = None
@@ -72,17 +73,15 @@ def normalize_format(path, name, subset, tokenizer, do_segment=False):
             example = example.split('\n')
             id = example[0]
             text = example[1]
-            if do_segment:
-                text = word_tokenize(text, format='text')
-                text = text_normalize(text)
+
 
             labels = example[2].split('; ')
             
-            text = ' '.join(tokenizer.convert_ids_to_tokens(tokenizer(text)['input_ids'])[1:-1])
+            text = process(text, tokenizer, do_segment)
 
             ids.append(id)
             texts.append(text)
-            all_labels.append([process_label(text, label, tokenizer) for label in labels])
+            all_labels.append([process_label(text, label, tokenizer, do_segment) for label in labels])
 
     
     with open(f'tokenized_data/{name}_{subset}_quad_bert.tsv', 'w') as f:
