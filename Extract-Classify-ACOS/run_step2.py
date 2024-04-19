@@ -25,9 +25,8 @@ from torch.utils.data import (DataLoader, RandomSampler, SequentialSampler,
                               TensorDataset)
 from torch.nn import CrossEntropyLoss, MSELoss, MultiLabelSoftMarginLoss, BCEWithLogitsLoss
 
-from my_modeling import CategorySentiClassification
+from modeling import CategorySentiClassification
 
-from transformers import AutoTokenizer, AutoConfig
 # sys.path.insert(0, '/home/hjcai/8RTX/BERT/pytorch_pretrained_BERT')
 # from modeling_for_share import BertForQuadABSAPairCSAO
 from bert_utils.tokenization import BertTokenizer
@@ -154,9 +153,7 @@ def main():
     label_list = processor.get_labels(args.domain_type)
     num_labels = len(label_list[0])
 
-    # tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
-    tokenizer = AutoTokenizer.from_pretrained(args.bert_model)
-    model_config = AutoConfig.from_pretrained(args.bert_model)
+    tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
     model_dict = {
         'categorysenti': CategorySentiClassification,
     }
@@ -256,7 +253,7 @@ def main():
 
         num_train_optimization_steps = math.ceil(len(train_dataloader) / args.gradient_accumulation_steps) * args.num_train_epochs
 
-        model = model_dict[args.model_type](args.bert_model, config, num_labels=num_labels)
+        model = model_dict[args.model_type].from_pretrained(args.bert_model, num_labels=num_labels)
         param_optimizer = list(model.named_parameters())
         no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
         optimizer_grouped_parameters = [
