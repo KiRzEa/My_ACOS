@@ -42,13 +42,15 @@ from torch.utils.data import (DataLoader, RandomSampler, SequentialSampler,
 from torch.utils.data.distributed import DistributedSampler
 from torch.nn import CrossEntropyLoss, MSELoss, MultiLabelSoftMarginLoss, BCEWithLogitsLoss
 
-from modeling import BertForQuadABSA
+from my_modeling import BertForQuadABSA
 from bert_utils.tokenization import BertTokenizer
 from bert_utils.optimization import BertAdam, WarmupLinearSchedule
 
 from run_classifier_dataset_utils import *
 from eval_metrics import *
 import gc
+
+from transformers import AutoTokenizer
 
 if sys.version_info[0] == 2:
     import cPickle as pickle
@@ -218,9 +220,11 @@ def main():
 
     if args.local_rank not in [-1, 0]:
         torch.distributed.barrier()  # Make sure only the first process in distributed training will download model & vocab
-    tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
+    # tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
+    tokenizer = AutoTokenizer.from_pretrained(args.bert_model)
+    model_config = AutoConfig.from_pretrained(args.bert_model)
     model_dict = {
-        'quad': BertForQuadABSA,
+        'quad': BertForQuadABSA
     }
 
     label_map_senti = {label : i for i, label in enumerate(label_list[0])}
@@ -350,7 +354,7 @@ def main():
 
         all_results = []
             
-        model = model_dict[args.model_type].from_pretrained(args.bert_model, num_labels=num_labels)
+        model = model_dict[args.model_type](args.bert_model, model_config, num_labels=num_labels)
         if args.local_rank == 0:
             torch.distributed.barrier()
 
