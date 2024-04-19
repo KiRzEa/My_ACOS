@@ -218,7 +218,7 @@ def main():
     valid_features = convert_examples_to_features2nd(
         valid_examples, label_list, args.max_seq_length, tokenizer, task_name, args.cls_token)
     f = cs.open(args.data_dir+'/tokenized_data/'+args.domain_type+'_dev_pair.tsv', 'r').readlines()
-    valid_quad_text, valid_quad_gold = read_pair_gold(f, args)
+    valid_quad_text, valid_quad_gold = read_pair_gold(f, args, tokenizer)
 
     valid_tokens_len = torch.tensor([f.tokens_len for f in valid_features], dtype=torch.long)
     valid_aspect_input_ids = torch.tensor([f.aspect_input_ids for f in valid_features], dtype=torch.long)
