@@ -111,7 +111,7 @@ def main(args=None):
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--model_name',
-                        type='str',
+                        type=str,
                         required=True)
     parser.add_argument('--do_segment',
                         action='store_true',
@@ -124,7 +124,7 @@ if __name__ == '__main__':
                         required=False,
                         default='tokenized_data')
     parser.add_argument('--experiment_name',
-                        type='str',
+                        type=str,
                         default='uit_absa_res')
 
     args = parser.parse_args()
