@@ -1,4 +1,4 @@
-from transformers import PreTrainedModel
+from transformers import PreTrainedModel, AutoModel, AutoConfig, AutoTokenizer
 from torch import nn
 
 class BertForQuadABSA(nn.Module):

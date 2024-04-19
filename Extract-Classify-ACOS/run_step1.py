@@ -50,7 +50,7 @@ from run_classifier_dataset_utils import *
 from eval_metrics import *
 import gc
 
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, AutoConfig, AutoModel
 
 if sys.version_info[0] == 2:
     import cPickle as pickle

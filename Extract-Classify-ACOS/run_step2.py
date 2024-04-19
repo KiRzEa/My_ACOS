@@ -27,6 +27,7 @@ from torch.nn import CrossEntropyLoss, MSELoss, MultiLabelSoftMarginLoss, BCEWit
 
 from my_modeling import CategorySentiClassification
 
+from transformers import AutoTokenizer, AutoConfig
 # sys.path.insert(0, '/home/hjcai/8RTX/BERT/pytorch_pretrained_BERT')
 # from modeling_for_share import BertForQuadABSAPairCSAO
 from bert_utils.tokenization import BertTokenizer
