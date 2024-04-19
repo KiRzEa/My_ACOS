@@ -1,5 +1,6 @@
 from transformers import PreTrainedModel, AutoModel, AutoConfig, AutoTokenizer
 from torch import nn
+from torchcrf import CRF
 
 class BertForQuadABSA(nn.Module):
 
