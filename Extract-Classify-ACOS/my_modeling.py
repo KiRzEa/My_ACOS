@@ -19,7 +19,7 @@ class BertForQuadABSA(nn.Module):
         super(BertForQuadABSA, self).__init__()
         # category-sentiment module parameters
         self.num_labels = [num_labels, 2]
-        self.bert = AutoModel.from_pretrained(model_name)
+        self.model = AutoModel.from_pretrained(model_name)
         self.dropout = nn.Dropout(config.hidden_dropout_prob)
         self.crf_num = 6
 
@@ -79,7 +79,7 @@ class CategorySentiClassification(nn.Module):
         # category-sentiment module parameters
         self.output_attentions = output_attentions
         self.num_labels = [num_labels, 2]
-        self.bert = AutoModel.from_pretrained(model_name)
+        self.model = AutoModel.from_pretrained(model_name)
         self.dropout = nn.Dropout(config.hidden_dropout_prob)
 
 
