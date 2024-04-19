@@ -4,12 +4,12 @@ import codecs as cs
 import os
 import sys
 import pdb
-from bert_utils.tokenization import BertTokenizer
 
-def read_pair_gold(f, args):
+from AutoTokenizer
+
+def read_pair_gold(f, args, tokenizer):
     # key: text + aspect span + opinion span; value: corresponding category-sentiment type number
 
-    tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
     quad_text = []
     quad_gold = []
     for line in f:
@@ -29,9 +29,8 @@ def read_pair_gold(f, args):
     return quad_text, quad_gold
 
 
-def read_triplet_gold(f, args):
+def read_triplet_gold(f, args, tokenizer):
     # key: text + aspect span + opinion span + sentiment type; value: corresponding category type number
-    tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
     quad_text = []
     quad_gold = []
     for line in f:

@@ -174,7 +174,7 @@ def main():
     if args.do_eval:
         eval_examples = processor.get_dev_examples(args.data_dir, args.domain_type)
         f = cs.open(args.data_dir+'/tokenized_data/'+args.domain_type+'_test_pair.tsv', 'r').readlines()
-        eval_quad_text, eval_quad_gold = read_pair_gold(f, args)
+        eval_quad_text, eval_quad_gold = read_pair_gold(f, args, tokenizer)
 
         eval_features = convert_examples_to_features2nd(
             eval_examples, label_list, args.max_seq_length, tokenizer, task_name, args.cls_token)
