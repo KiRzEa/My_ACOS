@@ -216,7 +216,7 @@ def main():
 
     valid_examples = processor.get_valid_examples(args.data_dir, args.domain_type)
     valid_features = convert_examples_to_features2nd(
-        valid_examples, label_list, args.max_seq_length, tokenizer, task_name, cls_token)
+        valid_examples, label_list, args.max_seq_length, tokenizer, task_name, args.cls_token)
     f = cs.open(args.data_dir+'/tokenized_data/'+args.domain_type+'_dev_pair.tsv', 'r').readlines()
     valid_quad_text, valid_quad_gold = read_pair_gold(f, args)
 
