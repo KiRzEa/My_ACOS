@@ -296,7 +296,7 @@ def main():
         train_examples = processor.get_train_examples(args.data_dir, args.domain_type)
 
         train_features = convert_examples_to_features(
-            train_examples, label_list, args.max_seq_length, tokenizer, output_mode, task_name)
+            train_examples, label_list, args.max_seq_length, tokenizer, output_mode, task_name, args.cls_token)
 
         tokens_len = torch.tensor([f.tokens_len for f in train_features], dtype=torch.long)
         aspect_input_ids = torch.tensor([f.aspect_input_ids for f in train_features], dtype=torch.long)
@@ -338,7 +338,7 @@ def main():
             valid_gold += [aspect_labels, cur_exist_imp_aspect, cur_exist_imp_opinion]
 
         valid_features = convert_examples_to_features(
-            valid_examples, label_list, args.max_seq_length, tokenizer, output_mode, task_name)
+            valid_examples, label_list, args.max_seq_length, tokenizer, output_mode, task_name, args.cls_token)
 
         valid_tokens_len = torch.tensor([f.tokens_len for f in valid_features], dtype=torch.long)
         valid_aspect_input_ids = torch.tensor([f.aspect_input_ids for f in valid_features], dtype=torch.long)
