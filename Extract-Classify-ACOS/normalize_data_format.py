@@ -20,6 +20,8 @@ def process_label(text, quad, tokenizer):
     aspect = word_tokenize(aspect, format='text')
     opinion = word_tokenize(opinion, format='text')
 
+    aspect = ' '.join(tokenizer.convert_ids_to_tokens(tokenizer(aspect)['input_ids'])[1:-1])
+    opinion = ' '.join(tokenizer.convert_ids_to_tokens(tokenizer(opinion)['input_ids'])[1:-1])
     # Find aspect in text
     aspect_start_index = None
     aspect_end_index = None
@@ -73,6 +75,8 @@ def normalize_format(path, name, subset, tokenizer, do_segment=False):
                 text = text_normalize(text)
 
             labels = example[2].split('; ')
+            
+            text = ' '.join(tokenizer.convert_ids_to_tokens(tokenizer(text)['input_ids'])[1:-1])
 
             ids.append(id)
             texts.append(text)
