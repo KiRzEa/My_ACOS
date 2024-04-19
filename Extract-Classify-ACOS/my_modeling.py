@@ -43,13 +43,12 @@ class BertForQuadABSA(nn.Module):
                 aspect_token_type_ids, aspect_attention_mask,
                 exist_imp_aspect, exist_imp_opinion):
 
-        # for name,parameters in self.state_dict().items():
-        #     if parameters.size()[0] < 2:
-        #         print(name,':',parameters)
+        print('Start')
 
         outputs = self.model(aspect_input_ids, aspect_token_type_ids, aspect_attention_mask)
         pooled_outputs, pooled_output = outputs.last_hidden_state, outputs.pooler_output
-
+        
+        print("Got bert-based model's output!")
         bs = pooled_output.shape[0]
         hidden_size = pooled_output.shape[-1]
 
@@ -57,15 +56,17 @@ class BertForQuadABSA(nn.Module):
         loss_fct = CrossEntropyLoss()
         imp_aspect_exist = self.imp_asp_classifier(pooled_output)
         imp_opinion_exist = self.imp_opi_classifier(pooled_outputs[range(pooled_outputs.shape[0]), torch.sum(aspect_attention_mask, dim=-1)-1])
-
+        print("Got [CLS] token embedding vectors")
         imp_aspect_loss = loss_fct(imp_aspect_exist, exist_imp_aspect.view(-1))
         imp_opinion_loss = loss_fct(imp_opinion_exist, exist_imp_opinion.view(-1))
 
+        print("Computed Loss for implicit detection")
         max_seq_len = aspect_input_ids.size()[1]
         sequence_output = self.dense_output(pooled_outputs)
         sequence_output = sequence_output.view(-1, max_seq_len, self.crf_num)
         ae_loss = - self.crf(sequence_output, aspect_labels, mask=aspect_attention_mask.byte(), reduction='mean')
         pred_tags = self.crf.decode(sequence_output, mask=aspect_attention_mask.byte())
+        print("Foward pass for NER model completed")
 
         total_loss = ae_loss + imp_aspect_loss + imp_opinion_loss
 
