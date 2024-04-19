@@ -417,7 +417,7 @@ def convert_examples_to_features2nd(examples, label_list, max_seq_length,
         for i, token in enumerate(bert_tokens_a):
             aspect_tokens.append(token)
             aspect_segment_ids.append(0)
-        aspect_tokens.append("[CLS]")
+        aspect_tokens.append(cls_token)
         tokens_len = len(aspect_tokens)
         aspect_segment_ids.append(0)
 
