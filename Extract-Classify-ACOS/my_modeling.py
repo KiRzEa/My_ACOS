@@ -37,7 +37,7 @@ from torch.nn import BCEWithLogitsLoss, CrossEntropyLoss, MSELoss
 from file_utils import cached_path, WEIGHTS_NAME, CONFIG_NAME
 
 PRETRAINED_MODEL_ARCHIVE_MAP = {}
-PRETRAINED_MODEL_ARCHIVE_MAP
+
 def gelu(x):
     """Implementation of the gelu activation function.
         For information: OpenAI GPT's gelu is slightly different (and gives slightly different results):
@@ -1182,5 +1182,60 @@ class RobertaForQuadABSA(RobertaPreTrainedModel):
         return [total_loss], [pred_tags, imp_aspect_exist, imp_opinion_exist]
 
 
-if __name__ == '__main__': 
-    model = RobertaForQuadABSA.from_pretrained('FacebookAI/roberta-base', num_labels=2)
+class CategorySentiClassification(RobertaPreTrainedModel):
+
+    def __init__(self, config, num_labels=2, output_attentions=False, keep_multihead_output=False):
+        super(CategorySentiClassification, self).__init__(config)
+        # category-sentiment module parameters
+        self.output_attentions = output_attentions
+        self.num_labels = [num_labels, 2]
+        self.bert = RobertaModel(config, output_attentions=output_attentions,
+                                      keep_multihead_output=keep_multihead_output)
+        self.dropout = nn.Dropout(config.hidden_dropout_prob)
+
+        # self.classifier = nn.Sequential(
+        #     nn.Linear(768*2, 768),
+        #     nn.Tanh(),
+        #     nn.Linear(768, num_labels)
+        # )
+        self.classifier = nn.Sequential(
+            nn.Linear(768*2, num_labels)
+        )
+
+        self.apply(self.init_weights)
+
+    def forward(self, tokenizer, _e, aspect_input_ids,
+                aspect_token_type_ids, aspect_attention_mask,
+                candidate_aspect, candidate_opinion, label_id):
+
+        aspect_seq_len = torch.max(torch.sum(aspect_attention_mask, dim=-1))
+        max_seq_len = aspect_seq_len
+        aspect_input_ids = aspect_input_ids[:, :max_seq_len].contiguous()
+        aspect_token_type_ids = aspect_token_type_ids[:, :max_seq_len].contiguous()
+        aspect_attention_mask = aspect_attention_mask[:, :max_seq_len].contiguous()
+        candidate_aspect = candidate_aspect[:, :max_seq_len].contiguous()
+        candidate_opinion = candidate_opinion[:, :max_seq_len].contiguous()
+
+
+        pooled_outputs, pooled_output = self.bert(aspect_input_ids, aspect_token_type_ids, aspect_attention_mask,
+        output_all_encoded_layers=False, head_mask=None)
+
+
+        bs = pooled_output.shape[0]
+        hidden_size = pooled_output.shape[-1]
+        
+
+        candidate_aspect_sum = torch.sum(candidate_aspect, -1).float()
+        aspect_denominator = (candidate_aspect_sum+candidate_aspect_sum.eq(0).float()).unsqueeze(-1).repeat(1, hidden_size)
+        candidate_aspect_rep = torch.div(torch.matmul(candidate_aspect.float().unsqueeze(1), pooled_outputs).squeeze(1), aspect_denominator)
+
+        candidate_opinion_sum = torch.sum(candidate_opinion, -1).float()
+        opinion_denominator = (candidate_opinion_sum+candidate_opinion_sum.eq(0).float()).unsqueeze(-1).repeat(1, hidden_size)
+        candidate_opinion_rep = torch.div(torch.matmul(candidate_opinion.float().unsqueeze(1), pooled_outputs).squeeze(1), opinion_denominator)
+
+        fused_feature = torch.cat([candidate_aspect_rep, candidate_opinion_rep], -1)
+        fused_feature = self.classifier(self.dropout(fused_feature))
+        cate_loss_fct = BCEWithLogitsLoss()
+        loss = cate_loss_fct(fused_feature.view(-1, self.num_labels[0]), label_id.view(-1, self.num_labels[0]).float() )
+        # pair_loss = loss_fct(pred_matrix, pair_matrix.view(-1))
+        return [loss], [fused_feature]

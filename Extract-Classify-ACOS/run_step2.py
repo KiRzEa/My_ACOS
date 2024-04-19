@@ -26,11 +26,13 @@ from torch.utils.data import (DataLoader, RandomSampler, SequentialSampler,
 from torch.nn import CrossEntropyLoss, MSELoss, MultiLabelSoftMarginLoss, BCEWithLogitsLoss
 
 from modeling import CategorySentiClassification
-
+# from my_modeling import CategorySentiClassification
 # sys.path.insert(0, '/home/hjcai/8RTX/BERT/pytorch_pretrained_BERT')
 # from modeling_for_share import BertForQuadABSAPairCSAO
 from bert_utils.tokenization import BertTokenizer
 from bert_utils.optimization import BertAdam, WarmupLinearSchedule
+
+from transformers import AutoTokenizer
 
 from run_classifier_dataset_utils import *
 from eval_metrics import *
@@ -79,7 +81,9 @@ def main():
                         type=str,
                         required=True,
                         help="model to choose.")
-
+    parser.add_argument("--cls_token",
+                        default='[CLS]',
+                        type=str)
     ## Other parameters
     parser.add_argument("--max_seq_length",
                         default=128,
@@ -153,7 +157,8 @@ def main():
     label_list = processor.get_labels(args.domain_type)
     num_labels = len(label_list[0])
 
-    tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
+    # tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
+    tokenizer = AutoTokenizer.from_pretrained(args.bert_model)
     model_dict = {
         'categorysenti': CategorySentiClassification,
     }
@@ -172,7 +177,7 @@ def main():
         eval_quad_text, eval_quad_gold = read_pair_gold(f, args)
 
         eval_features = convert_examples_to_features2nd(
-            eval_examples, label_list, args.max_seq_length, tokenizer, task_name)
+            eval_examples, label_list, args.max_seq_length, tokenizer, task_name, args.cls_token)
 
         eval_tokens_len = torch.tensor([f.tokens_len for f in eval_features], dtype=torch.long)
         eval_aspect_input_ids = torch.tensor([f.aspect_input_ids for f in eval_features], dtype=torch.long)
@@ -199,7 +204,7 @@ def main():
     # Prepare data loader
     train_examples = processor.get_train_examples(args.data_dir, args.domain_type)
     train_features = convert_examples_to_features2nd(
-        train_examples, label_list, args.max_seq_length, tokenizer, task_name)
+        train_examples, label_list, args.max_seq_length, tokenizer, task_name, args.cls_token)
 
     tokens_len = torch.tensor([f.tokens_len for f in train_features], dtype=torch.long)
     aspect_input_ids = torch.tensor([f.aspect_input_ids for f in train_features], dtype=torch.long)
@@ -211,7 +216,7 @@ def main():
 
     valid_examples = processor.get_valid_examples(args.data_dir, args.domain_type)
     valid_features = convert_examples_to_features2nd(
-        valid_examples, label_list, args.max_seq_length, tokenizer, task_name)
+        valid_examples, label_list, args.max_seq_length, tokenizer, task_name, cls_token)
     f = cs.open(args.data_dir+'/tokenized_data/'+args.domain_type+'_dev_pair.tsv', 'r').readlines()
     valid_quad_text, valid_quad_gold = read_pair_gold(f, args)
 
