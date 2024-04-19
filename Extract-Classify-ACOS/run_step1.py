@@ -231,7 +231,7 @@ def main():
 
     label_map_senti = {label : i for i, label in enumerate(label_list[0])}
     label_map_seq = {label : i for i, label in enumerate(label_list[1])}
-
+    print("CLS TOKEN:", args.cls_token)
     global_step = 0
     nb_tr_steps = 0
     eval_gold = []
