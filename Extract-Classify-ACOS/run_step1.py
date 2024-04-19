@@ -219,7 +219,7 @@ def main():
     processor = processors[task_name]()
     output_mode = output_modes[task_name]
 
-    label_list = processor.get_labels(args.domain_type)
+    label_list = processor.get_labels(args.domain_type, args.cls_token)
     num_labels = len(label_list[1])
 
     if args.local_rank not in [-1, 0]:

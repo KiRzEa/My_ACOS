@@ -155,7 +155,7 @@ class QuadProcessor(DataProcessor):
         return self._create_examples(
             self._read_tsv(os.path.join(data_dir, "tokenized_data/"+string+"_test_quad_bert.tsv")), "test")
 
-    def get_labels(self, domain_type):
+    def get_labels(self, domain_type, cls_token):
         """See base class."""
 
         sentiment = ['negative', 'neutral', 'positive']
